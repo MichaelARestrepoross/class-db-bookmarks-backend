@@ -1,7 +1,16 @@
 const express = require("express");
 
 const bookmarks = express.Router();
-const { getAllBookmarks } = require('../queries/bookmarks')
+const { 
+  getAllBookmarks,
+  getBookmark, 
+  createBookmark,
+} = require('../queries/bookmarks')
+
+const {
+  checkName,
+  checkBoolean
+} =require("../validations/checkBookmarks")
 
 bookmarks.get("/", async (req, res) => {
   const allBookmarks = await getAllBookmarks()
@@ -12,15 +21,24 @@ bookmarks.get("/", async (req, res) => {
   }
 });
 
-bookmarks.get("/:id", (req, res) => {
-  const { id } = req.params;
-
-  res.json({ message: `Get by id:${id} router` });
+bookmarks.get("/:id", async (req, res) => {
+  const { id } = req.params
+  const bookmark = await getBookmark(id)
+  if (bookmark) {
+    res.json(bookmark)
+  } else {
+    res.status(404).json({ error: 'not found' })
+  }
 });
 
-bookmarks.post("/", (req, res) => {
-  res.json({ message: "Post route" });
-});
+bookmarks.post('/', checkName,checkBoolean, async (req, res) => {
+  try {
+    const bookmark = await createBookmark(req.body)
+    res.json(bookmark)
+  } catch (error) {
+    res.status(400).json({ error: error })
+  }
+})
 
 bookmarks.put("/:id", (req, res) => {
   const { id } = req.params;
