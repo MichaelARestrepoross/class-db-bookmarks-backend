@@ -4,11 +4,13 @@ const cors = require("cors");
 const app = express();
 
 const bookmarksController = require("./controllers/bookmarksController.js");
+// const reviewsController = require('./controllers/reviewsController.js')
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/bookmarks", bookmarksController);
+// app.use('/api/reviews', reviewsController)
 
 // ROUTES
 app.get("/", (req, res) => {
